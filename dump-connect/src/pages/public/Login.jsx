@@ -2,14 +2,40 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useStore from '../../store/useStore'
 import Logo from '../../components/Logo'
+import { validateCredentials } from '../../mockData/credentials'
 
 export default function Login() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [role, setRole] = useState('user')
+  const [error, setError] = useState('')
   const navigate = useNavigate()
   const login = useStore(s => s.login)
 
   function handleSubmit(e) {
     e.preventDefault()
+    setError('')
+
+    // Validate credentials
+    if (!email || !password) {
+      setError('Please enter both email and password')
+      return
+    }
+
+    const user = validateCredentials(email, password)
+
+    if (!user) {
+      setError('Invalid email or password. Please try again with valid credentials.')
+      return
+    }
+
+    // Check if selected role matches user role
+    if (user.role !== role) {
+      setError(`This account is registered as a ${user.role}. Please select the correct role.`)
+      return
+    }
+
+    // Login successful
     login(role)
     if (role === 'admin') navigate('/admin/profile')
     else navigate('/user')
@@ -56,14 +82,32 @@ export default function Login() {
               <p className="text-sm text-slate-400">Enter your credentials to continue</p>
             </div>
 
+            {error && (
+              <div className="p-4 rounded-lg bg-red-900/30 border border-red-700/50 text-red-300 text-sm">
+                ⚠️ {error}
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium mb-3">Email Address</label>
-              <input required type="email" placeholder="you@example.com" className="w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-primary focus:outline-none transition hover:border-slate-600" />
+              <input 
+                type="email" 
+                placeholder="you@example.com" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-primary focus:outline-none transition hover:border-slate-600" 
+              />
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-3">Password</label>
-              <input type="password" required placeholder="••••••••" className="w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-primary focus:outline-none transition hover:border-slate-600" />
+              <input 
+                type="password" 
+                placeholder="••••••••" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-primary focus:outline-none transition hover:border-slate-600" 
+              />
             </div>
 
             <div>
