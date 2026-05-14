@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Logo from '../../components/Logo'
 
 export default function Signup() {
   const [role, setRole] = useState('user')
@@ -13,19 +14,95 @@ export default function Signup() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <h2 className="text-2xl font-semibold">Create account</h2>
-      <input placeholder="Full name" className="w-full p-2 rounded bg-slate-900 border border-slate-700" />
-      <input placeholder="Email" className="w-full p-2 rounded bg-slate-900 border border-slate-700" />
-      <input placeholder="Password" type="password" className="w-full p-2 rounded bg-slate-900 border border-slate-700" />
-      <div className="flex items-center gap-3">
-        <label className="text-sm">Role</label>
-        <select value={role} onChange={(e)=>setRole(e.target.value)} className="p-2 rounded bg-slate-900">
-          <option value="user">User / Citizen</option>
-          <option value="admin">Municipal Admin</option>
-        </select>
+    <div className="min-h-[80vh] flex items-center">
+      <div className="grid gap-12 lg:grid-cols-2 w-full items-center">
+        <div className="hidden lg:flex flex-col justify-start">
+          <div className="mb-12">
+            <Logo className="text-3xl" />
+          </div>
+          <h2 className="text-5xl font-bold mb-6">Get Started</h2>
+          <p className="text-lg text-slate-400 mb-12">Create an account to begin managing waste collection efficiently.</p>
+          <div className="space-y-6">
+            <div className="flex gap-4">
+              <span className="text-3xl flex-shrink-0">🌍</span>
+              <div>
+                <p className="font-semibold text-lg">Global Coverage</p>
+                <p className="text-sm text-slate-400 mt-1">Access waste management across all regions</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <span className="text-3xl flex-shrink-0">⚡</span>
+              <div>
+                <p className="font-semibold text-lg">Fast Setup</p>
+                <p className="text-sm text-slate-400 mt-1">Get up and running in minutes</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <span className="text-3xl flex-shrink-0">🔒</span>
+              <div>
+                <p className="font-semibold text-lg">Secure & Reliable</p>
+                <p className="text-sm text-slate-400 mt-1">Enterprise-grade security for your data</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="glass p-8 rounded-2xl border border-slate-700/50 backdrop-blur-xl">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <h3 className="text-3xl font-bold mb-2">Create Account</h3>
+              <p className="text-sm text-slate-400">Sign up to get started</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-3">Full Name</label>
+              <input required placeholder="John Doe" className="w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-primary focus:outline-none transition hover:border-slate-600" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-3">Email Address</label>
+              <input required type="email" placeholder="you@example.com" className="w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-primary focus:outline-none transition hover:border-slate-600" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-3">Password</label>
+              <input required type="password" placeholder="••••••••" className="w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-primary focus:outline-none transition hover:border-slate-600" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-4">Role</label>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { value: 'user', label: '👤 Citizen', desc: 'Request pickups' },
+                  { value: 'admin', label: '🏛️ Admin', desc: 'Manage fleet' }
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setRole(opt.value)}
+                    className={`p-4 rounded-lg border transition duration-200 ${
+                      role === opt.value
+                        ? 'border-primary bg-primary/15 shadow-lg shadow-primary/20'
+                        : 'border-slate-700 hover:border-slate-600 hover:bg-slate-800/30'
+                    }`}
+                  >
+                    <div className="font-semibold text-sm">{opt.label}</div>
+                    <div className="text-xs text-slate-400 mt-1">{opt.desc}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button type="submit" className="w-full px-4 py-3 bg-gradient-to-r from-primary to-accent rounded-lg text-white font-semibold hover:shadow-lg hover:shadow-primary/50 transition duration-300">
+              Create Account
+            </button>
+
+            <p className="text-center text-sm text-slate-400">
+              Already have an account? <a href="/login" className="text-primary hover:text-accent transition">Sign In</a>
+            </p>
+          </form>
+        </div>
       </div>
-      <button className="px-4 py-2 bg-primary rounded text-white">Create account</button>
-    </form>
+    </div>
   )
 }

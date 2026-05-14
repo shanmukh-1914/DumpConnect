@@ -99,6 +99,11 @@ const useStore = create(devtools((set, get) => ({
   setTruckStatus: (id, status) => set(state => ({ trucks: state.trucks.map(t => t.id === id ? { ...t, status } : t) })),
   setTruckRoute: (id, route) => set(state => ({ trucks: state.trucks.map(t => t.id === id ? { ...t, route, routeIndex: 0 } : t) })),
 
+  // Update request status
+  updateRequestStatus: (requestId, newStatus) => set(state => ({
+    requests: state.requests.map(r => r.id === requestId ? { ...r, status: newStatus, updatedAt: new Date().toISOString() } : r)
+  })),
+
   // Evaluate thresholds for areas and return list of areas crossing threshold
   evaluateThresholds: () => {
     const state = get()
