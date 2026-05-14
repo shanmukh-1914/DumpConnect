@@ -2,8 +2,10 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import trucksMock from '../mockData/trucks'
 import municipalCorporationsMock from '../mockData/municipalCorporations'
+import { validCredentials } from '../mockData/credentials'
 
 const SESSION_KEY = 'dumpconnect-session'
+const USERS_KEY = 'dumpconnect-users'
 
 function readSession() {
   if (typeof window === 'undefined') {
@@ -29,13 +31,29 @@ function persistSession(session) {
   window.localStorage.setItem(SESSION_KEY, JSON.stringify(session))
 }
 
+function readUsers() {
+  if (typeof window === 'undefined') return validCredentials
+  try {
+    const raw = window.localStorage.getItem(USERS_KEY)
+    if (!raw) return validCredentials
+    return JSON.parse(raw)
+  } catch {
+    return validCredentials
+  }
+}
+
+function persistUsers(users) {
+  if (typeof window === 'undefined') return
+  window.localStorage.setItem(USERS_KEY, JSON.stringify(users))
+}
+
 const initialSession = readSession()
 
 const useStore = create(devtools((set, get) => ({
   trucks: trucksMock,
   municipalCorporations: municipalCorporationsMock.map(m => ({ ...m, requests: 0, alerted: false })),
   requests: [],
-  users: [],
+  users: readUsers(),
   isAuthenticated: initialSession.isAuthenticated,
   role: initialSession.role,
   selectedCorporationId: initialSession.selectedCorporationId,
@@ -94,6 +112,13 @@ const useStore = create(devtools((set, get) => ({
   // Admin actions
   addTruck: (truck) => set(state => ({ trucks: [...state.trucks, truck] })),
   removeTruck: (id) => set(state => ({ trucks: state.trucks.filter(t => t.id !== id) })),
+
+  // User management (signup flow)
+  addUser: (user) => set(state => {
+    const users = [...state.users, user]
+    persistUsers(users)
+    return { users }
+  }),
 
   // Set truck status and optional assigned area
   setTruckStatus: (id, status) => set(state => ({ trucks: state.trucks.map(t => t.id === id ? { ...t, status } : t) })),

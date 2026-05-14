@@ -1,16 +1,42 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../../components/Logo'
+import useStore from '../../store/useStore'
 
 export default function Signup() {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [role, setRole] = useState('user')
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const navigate = useNavigate()
+  const addUser = useStore(s => s.addUser)
+  const users = useStore(s => s.users)
 
   function handleSubmit(e) {
     e.preventDefault()
-    // for prototype just navigate
-    if (role === 'admin') navigate('/admin')
-    else navigate('/user')
+    setError('')
+
+    if (!name || !email || !password) {
+      setError('Please fill all fields')
+      return
+    }
+
+    const exists = users.find(u => u.email === email)
+    if (exists) {
+      setError('An account with this email already exists. Please login.')
+      return
+    }
+
+    addUser({ name, email, password, role })
+    setSuccess('Account created successfully — redirecting to Sign In...')
+    // clear inputs
+    setName('')
+    setEmail('')
+    setPassword('')
+    // redirect after a short delay
+    setTimeout(() => navigate('/login'), 1500)
   }
 
   return (
@@ -54,19 +80,45 @@ export default function Signup() {
               <p className="text-sm text-slate-400">Sign up to get started</p>
             </div>
 
+            {error && (
+              <div className="p-4 rounded-lg bg-red-900/30 border border-red-700/50 text-red-300 text-sm">
+                ⚠️ {error}
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium mb-3">Full Name</label>
-              <input required placeholder="John Doe" className="w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-primary focus:outline-none transition hover:border-slate-600" />
+              <input
+                required
+                placeholder="John Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-primary focus:outline-none transition hover:border-slate-600"
+              />
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-3">Email Address</label>
-              <input required type="email" placeholder="you@example.com" className="w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-primary focus:outline-none transition hover:border-slate-600" />
+              <input
+                required
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-primary focus:outline-none transition hover:border-slate-600"
+              />
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-3">Password</label>
-              <input required type="password" placeholder="••••••••" className="w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-primary focus:outline-none transition hover:border-slate-600" />
+              <input
+                required
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg bg-slate-900/50 border border-slate-700 focus:border-primary focus:outline-none transition hover:border-slate-600"
+              />
             </div>
 
             <div>

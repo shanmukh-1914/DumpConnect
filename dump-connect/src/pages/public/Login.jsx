@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useStore from '../../store/useStore'
 import Logo from '../../components/Logo'
-import { validateCredentials } from '../../mockData/credentials'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -11,6 +10,7 @@ export default function Login() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const login = useStore(s => s.login)
+  const users = useStore(s => s.users)
 
   function handleSubmit(e) {
     e.preventDefault()
@@ -22,7 +22,7 @@ export default function Login() {
       return
     }
 
-    const user = validateCredentials(email, password)
+    const user = users.find(u => u.email === email && u.password === password)
 
     if (!user) {
       setError('Invalid email or password. Please try again with valid credentials.')
